@@ -7,7 +7,7 @@ internal class PlantConfiguration :
 {
     public void Configure(EntityTypeBuilder<Plant> builder)
     {
-        builder.ToTable("Accounts", "HzApp");
+        builder.ToTable("Plants", "dbo");
 
         builder.HasKey(p => p.Id);
             

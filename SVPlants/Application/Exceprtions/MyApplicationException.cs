@@ -5,7 +5,7 @@ public class MyApplicationException : Exception
 {
     public dynamic Payload { get; set; }
 
-    public MyApplicationException(string? message, Exception? innerException) : base(message, innerException)
+    public MyApplicationException(string? message, Exception? innerException = null) : base(message, innerException)
     {
 
     }
