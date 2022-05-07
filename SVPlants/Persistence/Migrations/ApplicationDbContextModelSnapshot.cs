@@ -22,6 +22,9 @@ namespace Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
+                    b.Property<bool>("IsWatering")
+                        .HasColumnType("INTEGER");
+
                     b.Property<DateTimeOffset?>("LastWateredAt")
                         .HasColumnType("TEXT");
 
@@ -30,10 +33,6 @@ namespace Persistence.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("TEXT");
 

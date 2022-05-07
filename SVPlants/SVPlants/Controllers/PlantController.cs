@@ -24,10 +24,28 @@ namespace SVPlants.Controllers
             return response;
         }
         
-        [HttpPost("{plantId}/water")]
-        public async Task WaterPlant(Guid plantId)
+        [HttpGet("{id}")]
+        public async Task<GetPlantDetailQuery.Response> Get(Guid id)
         {
-            await _mediator.Send(new WaterPlantCommand{ Id = plantId});
+            var response = await _mediator.Send(new  GetPlantDetailQuery{Id = id});
+
+            return response;
+        }
+
+        [HttpPost("{plantId}/water/start")]
+        public async Task<GetPlantDetailQuery.Response> StartWateringPlant(Guid plantId)
+        {
+            await _mediator.Send(new StartWateringPlantCommand{ Id = plantId});
+            
+            return await _mediator.Send(new  GetPlantDetailQuery{Id = plantId});
+        }
+        
+        [HttpPost("{plantId}/water/stop")]
+        public async Task<GetPlantDetailQuery.Response> StopWateringPlant(Guid plantId)
+        {
+            await _mediator.Send(new StopWateringPlantCommand{ Id = plantId});
+            
+            return await _mediator.Send(new  GetPlantDetailQuery{Id = plantId});
         }
     }
 }

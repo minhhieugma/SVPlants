@@ -12,11 +12,11 @@ using Microsoft.Extensions.Logging;
 
 namespace Application.Plant.Commands;
 
-public class StartWateringPlantCommand : IRequest
+public class StopWateringPlantCommand : IRequest
 {
     public Guid? Id { get; set; } = Guid.NewGuid();
 
-    public class Validator : AbstractValidator<StartWateringPlantCommand>
+    public class Validator : AbstractValidator<StopWateringPlantCommand>
     {
         public Validator()
         {
@@ -24,50 +24,33 @@ public class StartWateringPlantCommand : IRequest
         }
     }
 
-    public class Handler : IRequestHandler<StartWateringPlantCommand>
+    public class Handler : IRequestHandler<StopWateringPlantCommand>
     {
         private readonly ILogger _logger;
         private readonly ApplicationDbContext _context;
 
-        public Handler(ILogger<StartWateringPlantCommand> logger,
+        public Handler(ILogger<StopWateringPlantCommand> logger,
             ApplicationDbContext context)
         {
             _logger = logger;
             _context = context;
         }
 
-        public async Task<Unit> Handle(StartWateringPlantCommand command, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(StopWateringPlantCommand command, CancellationToken cancellationToken)
         {
             try
             {
                 var plant = await _context.Plants.SingleAsync(p => p.Id == command.Id);
 
-                switch (plant.Status)
-                {
-                    case PlantStatus.Resting:
-                        throw new MyApplicationException($"Plant {plant.Id} needs to rest from watering.");
-                    case PlantStatus.Watering:
-                        throw new MyApplicationException(
-                            $"Plant {plant.Id} is being watering from {plant.LastWateredAt}. Please wait for a while for another shot.");
-                }
-
                 var duration = DateTimeOffset.UtcNow - plant.LastWateredAt.GetValueOrDefault(DateTimeOffset.MinValue);
-                // if (duration <= TimeSpan.FromSeconds(10))
-                //     throw new MyApplicationException($"Plant {plant.Name} is watering.");
-
-                if(plant.IsWatering)
-                    throw new MyApplicationException($"Plant {plant.Name} is watering.");
                 
-                if (duration <= TimeSpan.FromSeconds(30))
-                    throw new MyApplicationException($"Plant {plant.Name} needs to rest from watering.");
+                if(plant.IsWatering == false)
+                    throw new MyApplicationException($"Plant {plant.Name} is not watering.");
 
+                plant.IsWatering = false;
                 plant.LastWateredAt = DateTimeOffset.Now;
-                //plant.Status = PlantStatus.Watering;
 
                 await _context.SaveChangesAsync(cancellationToken);
-
-                /*if(plant.LastWateredAt != null && plant.LastWateredAt.Value.AddSeconds(30) > DateTimeOffset.Now)
-                    throw new MyApplicationException($"Plant {plant.Id} is being watering from {plant.LastWateredAt}. Please wait for a while for another shot.");return*/
 
                 return Unit.Value;
             }

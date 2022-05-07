@@ -19,9 +19,9 @@ public static class DependencyInjection
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestPerformanceBehaviour<,>));
         services.AddTransient(typeof(IRequestPreProcessor<>), typeof(RequestValidationBehavior<>));
 
-        services.AddMediatR(config => config.AsScoped(), typeof(WaterPlantCommand.Handler).GetTypeInfo().Assembly);
+        services.AddMediatR(config => config.AsScoped(), typeof(StartWateringPlantCommand.Handler).GetTypeInfo().Assembly);
 
-        var validators = AssemblyScanner.FindValidatorsInAssemblyContaining<WaterPlantCommand.Validator>();
+        var validators = AssemblyScanner.FindValidatorsInAssemblyContaining<StartWateringPlantCommand.Validator>();
         validators.ForEach(validator => services.AddTransient(validator.InterfaceType, validator.ValidatorType));
 
         return services;

@@ -21,7 +21,7 @@ namespace Persistence.Migrations
                     Name = table.Column<string>(type: "TEXT", nullable: false),
                     Location = table.Column<string>(type: "TEXT", nullable: false),
                     LastWateredAt = table.Column<DateTimeOffset>(type: "TEXT", nullable: true),
-                    Status = table.Column<string>(type: "TEXT", nullable: false)
+                    IsWatering = table.Column<bool>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {

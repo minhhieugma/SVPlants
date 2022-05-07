@@ -21,33 +21,46 @@ public class GetAllPlantsQuery : IRequest<IEnumerable<Response>>
             _context = context;
         }
 
-        public async Task<IEnumerable<Response>> Handle(GetAllPlantsQuery querry, CancellationToken cancellationToken)
+        public async Task<IEnumerable<Response>> Handle(GetAllPlantsQuery query, CancellationToken cancellationToken)
         {
             var plants = await _context.Plants.ToListAsync(cancellationToken);
 
-            return plants
-                .Select(p => new Response
-                {
-                    Id = p.Id,
-                    Name = p.Name,
-                    Location = p.Location,
-                    Status = p.Status,
-                    LastWateredAt = p.LastWateredAt
-                })
-                .ToImmutableList();
+            var responses = new List<Response>();
+            foreach (var plant in plants)
+            {
+                var response = new Response();
+                response.Id = plant.Id;
+                response.Name = plant.Name;
+                response.Location = plant.Location;
+                response.LastWateredAt = plant.LastWateredAt;
+                
+                var duration = DateTimeOffset.UtcNow - plant.LastWateredAt.GetValueOrDefault(DateTimeOffset.MinValue);
+                if (plant.IsWatering)
+                    response.Status = PlantStatus.Watering;
+                else if (duration < TimeSpan.FromSeconds(30))
+                    response.Status = PlantStatus.Resting;
+                else if (duration >= TimeSpan.FromHours(6))
+                    response.Status = PlantStatus.NeededWater;
+                else
+                    response.Status = PlantStatus.Normal;
+                
+                responses.Add(response);
+            }
+
+            return responses;
         }
     }
 
     public record Response
     {
-        public Guid Id { get; init; } = Guid.Empty;
+        public Guid Id { get; set; } = Guid.Empty;
 
-        public string Name { get; init; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
 
-        public string Location { get; init; } = string.Empty;
+        public string Location { get; set; } = string.Empty;
 
-        public DateTimeOffset? LastWateredAt { get; init; }
+        public DateTimeOffset? LastWateredAt { get; set; }
 
-        public PlantStatus Status { get; init; } = PlantStatus.Normal;
+        public PlantStatus Status { get; set; } = PlantStatus.Normal;
     }
 }

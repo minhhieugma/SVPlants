@@ -12,11 +12,11 @@ using Microsoft.Extensions.Logging;
 
 namespace Application.Plant.Commands;
 
-public class WaterPlantCommand : IRequest
+public class StartWateringPlantCommand : IRequest
 {
     public Guid? Id { get; set; } = Guid.NewGuid();
 
-    public class Validator : AbstractValidator<WaterPlantCommand>
+    public class Validator : AbstractValidator<StartWateringPlantCommand>
     {
         public Validator()
         {
@@ -24,49 +24,50 @@ public class WaterPlantCommand : IRequest
         }
     }
 
-    public class Handler : IRequestHandler<WaterPlantCommand>
+    public class Handler : IRequestHandler<StartWateringPlantCommand>
     {
         private readonly ILogger _logger;
         private readonly ApplicationDbContext _context;
 
-        public Handler(ILogger<WaterPlantCommand> logger,
+        public Handler(ILogger<StartWateringPlantCommand> logger,
             ApplicationDbContext context)
         {
             _logger = logger;
             _context = context;
         }
 
-        public async Task<Unit> Handle(WaterPlantCommand command, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(StartWateringPlantCommand command, CancellationToken cancellationToken)
         {
             try
             {
-                var plant = await _context.Plants.SingleAsync(p => p.Id == command.Id);
-
-                switch (plant.Status)
+                var mainTask = Task.Run(async () =>
                 {
-                    case PlantStatus.Resting:
-                        throw new MyApplicationException($"Plant {plant.Id} needs to rest from watering.");
-                    case PlantStatus.Watering:
-                        throw new MyApplicationException($"Plant {plant.Id} is being watering from {plant.LastWateredAt}. Please wait for a while for another shot.");
-                }
-                
-                plant.LastWateredAt = DateTimeOffset.Now;
-                plant.Status = PlantStatus.Watering;
+                    var plant = await _context.Plants.SingleAsync(p => p.Id == command.Id);
 
-                await _context.SaveChangesAsync(cancellationToken);
-                
-                /*if(plant.LastWateredAt != null && plant.LastWateredAt.Value.AddSeconds(30) > DateTimeOffset.Now)
-                    throw new MyApplicationException($"Plant {plant.Id} is being watering from {plant.LastWateredAt}. Please wait for a while for another shot.");return*/
-                
+                    var duration = DateTimeOffset.UtcNow -
+                                   plant.LastWateredAt.GetValueOrDefault(DateTimeOffset.MinValue);
+
+                    if (plant.IsWatering)
+                        throw new MyApplicationException($"Plant {plant.Name} is watering.");
+
+                    if (duration <= TimeSpan.FromSeconds(30))
+                        throw new MyApplicationException($"Plant {plant.Name} needs to rest from watering.");
+
+                    plant.IsWatering = true;
+
+                    await _context.SaveChangesAsync(cancellationToken);
+                });
+
+                Task.WaitAll(mainTask, Task.Delay(TimeSpan.FromSeconds(10)));
+
                 return Unit.Value;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed when execute command with {Payload}",
-                    JsonSerializer.Serialize(new { command }));
+                    JsonSerializer.Serialize(new {command}));
                 throw;
             }
         }
     }
 }
-

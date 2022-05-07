@@ -17,6 +17,7 @@
     "react-scripts": "^5.0.0",
     "reactstrap": "^8.9.0",
     "rimraf": "^2.6.2",
+    "sweetalert2": "^11.4.10",
     "web-vitals": "^0.2.4",
     "workbox-background-sync": "^5.1.3",
     "workbox-broadcast-update": "^5.1.3",

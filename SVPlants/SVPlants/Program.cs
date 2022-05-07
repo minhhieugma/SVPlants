@@ -37,6 +37,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options
         .UseSqlite($"Data Source=plant.db")
 );
 
+// builder.Services.AddHostedService<WateringService>();
+
 var app = builder.Build();
 
 app.UseExceptionHandler(a => a.Run(async context =>
@@ -95,11 +97,11 @@ static void Seed(ApplicationDbContext context)
         return;
     }
     
-    context.Plants.Add(new Plant { Id = Guid.NewGuid(), Name = "Angel Wing Begonia", Location = "Living Room", Status = PlantStatus.Normal, LastWateredAt = null});
-    context.Plants.Add(new Plant { Id = Guid.NewGuid(), Name = "Barberton Daisy", Location = "Front Door", Status = PlantStatus.Normal, LastWateredAt = DateTimeOffset.UtcNow});
-    context.Plants.Add(new Plant { Id = Guid.NewGuid(), Name = "Beach Spider Lily", Location = "Yard", Status = PlantStatus.Normal, LastWateredAt = null});
-    context.Plants.Add(new Plant { Id = Guid.NewGuid(), Name = "Belladonna Lily", Location = "Kitchen", Status = PlantStatus.Normal, LastWateredAt = new DateTime(2022, 5, 5, 14, 0,0,0)});
-    context.Plants.Add(new Plant { Id = Guid.NewGuid(), Name = "Bird Of Paradise", Location = "Bedroom", Status = PlantStatus.Normal, LastWateredAt = null});
+    context.Plants.Add(new Plant { Id = Guid.NewGuid(), Name = "Angel Wing Begonia", Location = "Living Room", LastWateredAt = null});
+    context.Plants.Add(new Plant { Id = Guid.NewGuid(), Name = "Barberton Daisy", Location = "Front Door", LastWateredAt = DateTimeOffset.UtcNow});
+    context.Plants.Add(new Plant { Id = Guid.NewGuid(), Name = "Beach Spider Lily", Location = "Yard", LastWateredAt = null});
+    context.Plants.Add(new Plant { Id = Guid.NewGuid(), Name = "Belladonna Lily", Location = "Kitchen", LastWateredAt = new DateTime(2022, 5, 5, 14, 0,0,0)});
+    context.Plants.Add(new Plant { Id = Guid.NewGuid(), Name = "Bird Of Paradise", Location = "Bedroom", LastWateredAt = null});
         
     context.SaveChanges();
 }

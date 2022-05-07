@@ -10,5 +10,7 @@ public class Plant
     
     public  DateTimeOffset? LastWateredAt { get; set; }
 
-    public PlantStatus Status { get; set; } = PlantStatus.Normal;
+    // public PlantStatus Status { get; set; } = PlantStatus.Normal;
+
+    public bool IsWatering { get; set; } = false;
 }
