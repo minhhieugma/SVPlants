@@ -35,6 +35,7 @@ The application can esily run by pulling the source code and run it directly wit
 - A red "Need Water" status will be assigned to the plant without water for more than 6 hours
 
 ## Resting Plant
+- "Last Watered At" will be assigned the current system date & time when the watering is stopped
 - A progress bar shows how much resting time left
 
 ## Water Multiple Plants
