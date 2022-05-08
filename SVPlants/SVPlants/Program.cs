@@ -90,18 +90,20 @@ Seed(app.Services.CreateScope().ServiceProvider.GetService<ApplicationDbContext>
 app.Run();
 
 static void Seed(ApplicationDbContext context)
-{ 
+{
+    // dotnet ef migrations Add InitialCreate --project ../Persistence/Persistence.csproj
+    // dotnet ef migrations remove  --project ../Persistence/Persistence.csproj
     if (context.Database.EnsureCreated() == false)
     {
         // Database already exists, don't try to seed it
         return;
     }
     
-    context.Plants.Add(new Plant { Id = Guid.NewGuid(), Name = "Angel Wing Begonia", Location = "Living Room", LastWateredAt = null});
-    context.Plants.Add(new Plant { Id = Guid.NewGuid(), Name = "Barberton Daisy", Location = "Front Door", LastWateredAt = DateTimeOffset.UtcNow});
-    context.Plants.Add(new Plant { Id = Guid.NewGuid(), Name = "Beach Spider Lily", Location = "Yard", LastWateredAt = null});
-    context.Plants.Add(new Plant { Id = Guid.NewGuid(), Name = "Belladonna Lily", Location = "Kitchen", LastWateredAt = new DateTime(2022, 5, 5, 14, 0,0,0)});
-    context.Plants.Add(new Plant { Id = Guid.NewGuid(), Name = "Bird Of Paradise", Location = "Bedroom", LastWateredAt = null});
+    context.Plants.Add(new Plant { Id = Guid.NewGuid(), Name = "Angel Wing Begonia", Location = "Living Room", LastWateredAt = null, ImageUrl = "https://www.houseplantsexpert.com/assets/images/angel_wing_begonia.jpg", IsWatering = true});
+    context.Plants.Add(new Plant { Id = Guid.NewGuid(), Name = "Barberton Daisy", Location = "Front Door", LastWateredAt = DateTimeOffset.UtcNow, ImageUrl = "https://www.gardeningknowhow.com/wp-content/uploads/2012/03/gerbera.jpg"});
+    context.Plants.Add(new Plant { Id = Guid.NewGuid(), Name = "Beach Spider Lily", Location = "Yard", LastWateredAt = DateTime.UtcNow.AddHours(-2), ImageUrl = "https://www.gardenia.net/storage/app/public/uploads/images/detail/2CUAR7OwcmqF87elKFxxyck0qSAt30tIaQdLAofX.jpeg"});
+    context.Plants.Add(new Plant { Id = Guid.NewGuid(), Name = "Belladonna Lily", Location = "Kitchen", LastWateredAt = DateTime.UtcNow.AddHours(-7), ImageUrl = "https://upload.wikimedia.org/wikipedia/commons/e/ea/Amaryllis_belladonna.jpg"});
+    context.Plants.Add(new Plant { Id = Guid.NewGuid(), Name = "Bird Of Paradise", Location = "Bedroom", LastWateredAt = null, ImageUrl = "https://www.ftd.com/blog/wp-content/uploads/2016/08/hero-birdofparadise-720x480.jpg"});
         
     context.SaveChanges();
 }

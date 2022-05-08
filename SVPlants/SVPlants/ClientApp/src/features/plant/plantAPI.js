@@ -17,7 +17,7 @@ export function startWatering(plantId) {
       const data = isJson ? await response.json() : null;
 
       if (!response.ok) {
-        const error = (data && data.message) || response.status;
+        const error = (data && data.message) || (data && data.error) || response.status;
         return Promise.reject(error);
       }
 
@@ -38,7 +38,7 @@ export function stopWatering(plantId) {
       const data = isJson ? await response.json() : null;
 
       if (!response.ok) {
-        const error = (data && data.message) || response.status;
+        const error = (data && data.message) || (data && data.error) || response.status;
         return Promise.reject(error);
       }
 

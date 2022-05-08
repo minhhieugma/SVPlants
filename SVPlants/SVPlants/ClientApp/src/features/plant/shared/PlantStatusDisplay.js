@@ -19,6 +19,6 @@ export default function PlantStatusDisplay(props) {
   }
 
   return (
-    <span className={`badge rounded-pill ${type}`}>{props.status}</span>
+    <span className={`badge rounded-pill p-2 px-2 ${type}`}>{props.status}</span>
   )
 }

@@ -19,6 +19,7 @@ namespace Persistence.Migrations
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
                     Name = table.Column<string>(type: "TEXT", nullable: false),
+                    ImageUrl = table.Column<string>(type: "TEXT", nullable: false),
                     Location = table.Column<string>(type: "TEXT", nullable: false),
                     LastWateredAt = table.Column<DateTimeOffset>(type: "TEXT", nullable: true),
                     IsWatering = table.Column<bool>(type: "INTEGER", nullable: false)

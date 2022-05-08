@@ -40,7 +40,10 @@ export const plantSlice = createSlice({
       state.plants.forEach(plant => {
         const duration = moment.duration(moment().diff(moment(moment(plant.lastWateredAt))))
 
-        if (duration.asHours() >= 6) {
+        if (plant.isWatering) {
+          plant.status = 'Watering'
+        }
+        else if (duration.asHours() >= 6) {
           plant.status = 'NeededWater'
         }
         else if (plant.status === 'Resting') {
@@ -74,12 +77,20 @@ export const plantSlice = createSlice({
         action.payload.processing = false
         state.plants = state.plants.map(el => (el.id === action.payload.id ? action.payload : el))
       })
+      .addCase(startWateringAsync.rejected, (state, action) => {
+        state.plants.find(p => p.id === action.meta.arg).processing = false
+        state.error = action.error.message
+      })
       .addCase(stopWateringAsync.pending, (state, action) => {
         state.plants.find(p => p.id === action.meta.arg).processing = true
       })
       .addCase(stopWateringAsync.fulfilled, (state, action) => {
         action.payload.processing = false
         state.plants = state.plants.map(el => (el.id === action.payload.id ? action.payload : el))
+      })
+      .addCase(stopWateringAsync.rejected, (state, action) => {
+        state.plants.find(p => p.id === action.meta.arg).processing = false
+        state.error = action.error.message
       })
   },
 });
