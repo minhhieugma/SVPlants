@@ -12,23 +12,6 @@ The application can esily run by pulling the source code and run it directly wit
 - Rider 2021.3.3
 
 
-# Technologies:
-## Backend - Web API
-- .NET 6
-- EF Core 6
-- Mediator
-- CQRS
-- SQLite
-- Clean Structure
-- FluentValidation
-
-## Frontend
-- ReactJS
-- Redux + Toolkit
-- moment.js
-- SweatAlert
-- Bootstrap 5
-
 # Usage
 
 ## Visible Alert
@@ -51,3 +34,21 @@ The application can esily run by pulling the source code and run it directly wit
 ## Animation
 ![watering](https://user-images.githubusercontent.com/9654744/167286893-f1354e78-b02c-482a-ad07-0c4655379fa8.gif)
 
+
+
+# Technologies:
+## Backend - Web API
+- .NET 6
+- EF Core 6
+- Mediator
+- CQRS
+- SQLite
+- Clean Structure
+- FluentValidation
+
+## Frontend
+- ReactJS
+- Redux + Toolkit
+- moment.js
+- SweatAlert
+- Bootstrap 5
