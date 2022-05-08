@@ -4,14 +4,14 @@ export function fetchPlants() {
     .then(res => res.json())
 }
 
-export function startWatering(plantId) {
+export function startWatering(plantIds) {
   const requestOptions = {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: ''
+    body: JSON.stringify({ ids: plantIds })
   };
 
-  return fetch(`plant/${plantId}/water/start`, requestOptions)
+  return fetch(`plant/water/start`, requestOptions)
     .then(async response => {
       const isJson = response.headers.get('content-type')?.includes('application/json');
       const data = isJson ? await response.json() : null;
@@ -45,4 +45,3 @@ export function stopWatering(plantId) {
       return data
     })
 }
-

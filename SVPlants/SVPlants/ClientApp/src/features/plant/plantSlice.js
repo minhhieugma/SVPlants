@@ -17,8 +17,8 @@ export const fetchPlantsAsync = createAsyncThunk(
 
 export const startWateringAsync = createAsyncThunk(
   'plant/startWatering',
-  async (plantId) => {
-    const response = await startWatering(plantId);
+  async (plantIds) => {
+    const response = await startWatering(plantIds);
     return response;
   }
 );
@@ -68,17 +68,20 @@ export const plantSlice = createSlice({
       })
       .addCase(fetchPlantsAsync.fulfilled, (state, action) => {
         state.status = 'idle';
+
         state.plants = action.payload;
+        // state.plants.forEach(p => p.selected = false)
       })
       .addCase(startWateringAsync.pending, (state, action) => {
-        state.plants.find(p => p.id === action.meta.arg).processing = true
+        action.meta.arg.forEach(plantId => state.plants.find(p => p.id === plantId).processing = true)
       })
       .addCase(startWateringAsync.fulfilled, (state, action) => {
-        action.payload.processing = false
-        state.plants = state.plants.map(el => (el.id === action.payload.id ? action.payload : el))
+        action.payload.forEach(plant => {
+          state.plants = state.plants.map(el => (el.id === plant.id ? { ...plant, processing: false } : el))
+        })
       })
       .addCase(startWateringAsync.rejected, (state, action) => {
-        state.plants.find(p => p.id === action.meta.arg).processing = false
+        action.meta.arg.forEach(plantId => state.plants.find(p => p.id === plantId).processing = false)
         state.error = action.error.message
       })
       .addCase(stopWateringAsync.pending, (state, action) => {

@@ -44,8 +44,11 @@ var app = builder.Build();
 app.UseExceptionHandler(a => a.Run(async context =>
 {
     var exceptionHandlerPathFeature = context.Features.Get<IExceptionHandlerPathFeature>();
-
-    switch (exceptionHandlerPathFeature?.Error)
+    var exception = exceptionHandlerPathFeature?.Error;
+    if (exception is AggregateException aggEx)
+        exception = aggEx.InnerExceptions.First();
+    
+    switch (exception)
     {
         case FluentValidation.ValidationException validationEx:
         {

@@ -1,10 +1,5 @@
-﻿using System;
-using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Text.Json;
 using Application.Exceptions;
-using Domain;
-using Domain.PlantAggregate;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -14,20 +9,20 @@ namespace Application.Plant.Commands;
 
 public class StartWateringPlantCommand : IRequest
 {
-    public Guid? Id { get; set; } = Guid.NewGuid();
+    public Guid[] Ids { get; set; } = new Guid[0];
 
     public class Validator : AbstractValidator<StartWateringPlantCommand>
     {
         public Validator()
         {
-            RuleFor(p => p.Id).NotEqual(Guid.Empty);
+            RuleFor(p => p.Ids.Length).NotEqual(0);
         }
     }
 
     public class Handler : IRequestHandler<StartWateringPlantCommand>
     {
-        private readonly ILogger _logger;
         private readonly ApplicationDbContext _context;
+        private readonly ILogger _logger;
 
         public Handler(ILogger<StartWateringPlantCommand> logger,
             ApplicationDbContext context)
@@ -42,22 +37,28 @@ public class StartWateringPlantCommand : IRequest
             {
                 var mainTask = Task.Run(async () =>
                 {
-                    var plant = await _context.Plants.SingleAsync(p => p.Id == command.Id);
+                    var plants = await _context.Plants
+                        .Where(p => command.Ids.Contains(p.Id))
+                        .ToListAsync(cancellationToken);
 
-                    var duration = DateTimeOffset.UtcNow -
-                                   plant.LastWateredAt.GetValueOrDefault(DateTimeOffset.MinValue);
+                    foreach (var plant in plants)
+                    {
+                        var duration = DateTimeOffset.UtcNow -
+                                       plant.LastWateredAt.GetValueOrDefault(DateTimeOffset.MinValue);
 
-                    if (plant.IsWatering)
-                        throw new MyApplicationException($"Plant {plant.Name} is watering.");
+                        if (plant.IsWatering)
+                            throw new MyApplicationException($"Plant {plant.Name} is watering.");
 
-                    if (duration <= TimeSpan.FromSeconds(30))
-                        throw new MyApplicationException($"Plant {plant.Name} needs to rest from watering.");
+                        if (duration <= TimeSpan.FromSeconds(30))
+                            throw new MyApplicationException($"Plant {plant.Name} needs to rest from watering.");
 
-                    plant.IsWatering = true;
+                        plant.IsWatering = true;
+                    }
 
                     await _context.SaveChangesAsync(cancellationToken);
                 });
 
+                // Simulate the watering takes 10 seconds to complete
                 Task.WaitAll(mainTask, Task.Delay(TimeSpan.FromSeconds(10)));
 
                 return Unit.Value;

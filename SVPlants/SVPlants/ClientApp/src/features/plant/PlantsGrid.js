@@ -17,6 +17,7 @@ import {
 
 export default function PlantsGrid() {
   const [error, setError] = useState(null);
+  const [selectedPlants, setSelectedPlants] = useState([]);
 
   const dispatch = useDispatch();
 
@@ -32,8 +33,6 @@ export default function PlantsGrid() {
   useEffect(() => {
     const interval = setInterval(() => {
       dispatch(calculatePlantsStatus())
-        .unwrap()
-        .catch(error => setError(error))
     }, 1000);
 
     return () => clearInterval(interval);
@@ -52,7 +51,7 @@ export default function PlantsGrid() {
 
   const renderActions = (plant) => {
     if (plant.isWatering)
-      return <Button btnStyle='danger' display='Stop Watering' processing={plant.processing} processingText='Stopping...'
+      return <Button btnStyle='danger btn-sm' display='Stop Watering' processing={plant.processing} processingText='Stopping...'
         onClick={() => dispatch(stopWateringAsync(plant.id)).unwrap()
           .catch(error => setError(error))} />
 
@@ -60,22 +59,34 @@ export default function PlantsGrid() {
       return <RestingCoundownDisplay remaining={plant.remaining} />
 
     if (plant.status === 'Normal' || plant.status === 'NeededWater')
-      return <Button btnStyle='primary' display='Start Watering' processing={plant.processing} processingText='Watering...'
-        onClick={() => dispatch(startWateringAsync(plant.id)).unwrap()
+      return <Button btnStyle='primary btn-sm' display='Start Watering' processing={plant.processing} processingText='Watering...'
+        onClick={() => dispatch(startWateringAsync([plant.id])).unwrap()
           .catch(error => setError(error))} />
 
   }
 
+  const onSelectionChanged = (plant) => {
+    setSelectedPlants(prevState => prevState.find(p => p === plant.id) !== undefined ? prevState.filter(p => p !== plant.id) : [...prevState, plant.id])
+  }
+
   return (
     status !== 'idle' ?
-      <div class="spinner-border text-primary" role="status">
-        <span class="visually-hidden">Loading...</span>
+      <div className="spinner-border text-primary" role="status">
+        <span className="visually-hidden">Loading...</span>
       </div>
       :
       <div>
-        <table className="table">
+        <Button btnStyle='primary' display='Watering selected plants'
+          onClick={() => {
+            dispatch(startWateringAsync(selectedPlants)).unwrap()
+            .catch(error => setError(error))
+
+            setSelectedPlants([])
+          }} />
+        <table className="table table-hover">
           <thead>
             <tr>
+              <th scope="col"></th>
               <th scope="col">#</th>
               <th scope="col">Image</th>
               <th scope="col">Plant Name</th>
@@ -87,19 +98,26 @@ export default function PlantsGrid() {
           </thead>
           <tbody>
             {
-              plants.map((p, index) =>
-                <tr key={p.id}>
+              plants.map((plant, index) =>
+                <tr key={plant.id} onClick={() => onSelectionChanged(plant)}>
+                  <td>
+                    <div className="form-check">
+                      <input className="form-check-input" type="checkbox"
+                        // defaultChecked={plant.selected}
+                        checked={selectedPlants.find(p => p === plant.id) !== undefined}
+                        onChange={() => onSelectionChanged(plant)} />
+                    </div>
+                  </td>
                   <th scope="row">{index + 1}</th>
                   <td style={{ width: '15%' }}>
-                    <img src={p.imageUrl}
+                    <img src={plant.imageUrl}
                       className="rounded img-fluid"></img>
                   </td>
-                  <td>{p.name}</td>
-                  <td>{p.location}</td>
-                  <td><DateTimeDisplay value={p.lastWateredAt} /></td>
-                  <td><PlantStatusDisplay status={p.status} /></td>
-                  <td>{renderActions(p)}
-                  </td>
+                  <td>{plant.name}</td>
+                  <td>{plant.location}</td>
+                  <td><DateTimeDisplay value={plant.lastWateredAt} /></td>
+                  <td><PlantStatusDisplay status={plant.status} /></td>
+                  <td>{renderActions(plant)}</td>
                 </tr>
               )}
           </tbody>

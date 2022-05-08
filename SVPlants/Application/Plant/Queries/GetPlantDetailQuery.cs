@@ -25,7 +25,10 @@ public class GetPlantDetailQuery : IRequest<Response>
 
         public async Task<Response> Handle(GetPlantDetailQuery query, CancellationToken cancellationToken)
         {
-            var plant = await _context.Plants.Where(p=>p.Id == query.Id).SingleAsync(cancellationToken);
+            var plant = await _context.Plants
+                .AsNoTracking()
+                .Where(p=>p.Id == query.Id)
+                .SingleAsync(cancellationToken);
 
             var response = new Response();
             response.Id = plant.Id;

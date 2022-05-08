@@ -2,28 +2,35 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using static Application.Plant.Queries.GetAllPlantsQuery;
+using static Application.Plant.Queries.SearchPlantsQuery;
 
 namespace Application.Plant.Queries;
 
-public class GetAllPlantsQuery : IRequest<IEnumerable<Response>>
+public class SearchPlantsQuery : IRequest<IEnumerable<Response>>
 {
-    public class Handler : IRequestHandler<GetAllPlantsQuery, IEnumerable<Response>>
+    public Guid[]? Ids { get; set; }
+    
+    public class Handler : IRequestHandler<SearchPlantsQuery, IEnumerable<Response>>
     {
         private readonly ApplicationDbContext _context;
         private readonly ILogger _logger;
 
-        public Handler(ILogger<GetAllPlantsQuery> logger,
+        public Handler(ILogger<SearchPlantsQuery> logger,
             ApplicationDbContext context)
         {
             _logger = logger;
             _context = context;
         }
 
-        public async Task<IEnumerable<Response>> Handle(GetAllPlantsQuery query, CancellationToken cancellationToken)
+        public async Task<IEnumerable<Response>> Handle(SearchPlantsQuery request, CancellationToken cancellationToken)
         {
-            var plants = await _context.Plants.ToListAsync(cancellationToken);
+            var query = _context.Plants.AsNoTracking();
 
+            if (request.Ids != null)
+                query = query.Where(p => request.Ids.Contains(p.Id));
+            
+            var plants = await query.ToListAsync(cancellationToken);
+            
             var responses = new List<Response>();
             foreach (var plant in plants)
             {
