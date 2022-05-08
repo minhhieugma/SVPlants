@@ -1,4 +1,4 @@
-# Plant Monitoring System
+# Plant Monitoring Web App
 
 A simple web application to monitor plants and water them when neeeded
 
