@@ -1,9 +1,10 @@
 # Plant Monitoring System
 
-A simple web application to help monitoring plants and water them when neeeded
+A simple web application to monitor plants and water them when neeeded
 
 # Quick Start
 The application can esily run by pulling the source code and run it directly with Visual Studio
+- Access the solution by opening SVPlants.sln file
 - It should work in Windows, MacOS, Visual Studio, VSCode, Rider
 
 **Tested with:**
@@ -29,6 +30,17 @@ The application can esily run by pulling the source code and run it directly wit
 - Bootstrap 5
 
 # Usage
+
+## Visible Alert
+- A red "Need Water" status will be assigned to the plant without water for more than 6 hours
+
+## Resting Plant
+- A progress bar shows how much resting time left
+
+## Water Multiple Plants
+- Select multiple rows and click "Water Multiple Plants" to water multiple plants at the same time
+
+## Reset the application state
 - Since we use SQLite as the storage, we need to delete 3 files of the database to reset the application state.
 <img width="228" alt="image" src="https://user-images.githubusercontent.com/9654744/167286824-a05dcc28-7b60-4832-9fe8-6693678df902.png">
 
