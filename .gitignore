@@ -6,5 +6,7 @@
 **/obj
 **/bin
 .DS_Store
-**/plant.*
+**/plant.db
+**/plant.db-shm
+**/plant.db-wal
 **/.idea
