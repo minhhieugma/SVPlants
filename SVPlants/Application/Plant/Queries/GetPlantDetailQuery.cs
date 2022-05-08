@@ -32,11 +32,10 @@ public class GetPlantDetailQuery : IRequest<Response>
             response.Name = plant.Name;
             response.Location = plant.Location;
             response.LastWateredAt = plant.LastWateredAt;
-                
+            response.IsWatering = plant.IsWatering;
+            
             var duration = DateTimeOffset.UtcNow - plant.LastWateredAt.GetValueOrDefault(DateTimeOffset.MinValue);
-            if (plant.IsWatering)
-                response.Status = PlantStatus.Watering;
-            else if (duration < TimeSpan.FromSeconds(30))
+            if (duration < TimeSpan.FromSeconds(30))
                 response.Status = PlantStatus.Resting;
             else if (duration >= TimeSpan.FromHours(6))
                 response.Status = PlantStatus.NeededWater;
@@ -58,5 +57,7 @@ public class GetPlantDetailQuery : IRequest<Response>
         public DateTimeOffset? LastWateredAt { get; set; }
 
         public PlantStatus Status { get; set; } = PlantStatus.Normal;
+        
+        public bool IsWatering { get; set; }
     }
 }

@@ -8,8 +8,6 @@ public enum PlantStatus
     Normal,
     [EnumMember(Value = "NeededWater")]
     NeededWater,
-    [EnumMember(Value = "Watering")]
-    Watering,
     [EnumMember(Value = "Resting")]
     Resting,
 }
