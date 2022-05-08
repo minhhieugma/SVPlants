@@ -27,7 +27,7 @@ export default function PlantsGrid() {
   useEffect(() => {
     dispatch(fetchPlantsAsync())
       .unwrap()
-      .catch(error => setError(error))
+      .catch(e => setError(e))
   }, [])
 
   useEffect(() => {
@@ -53,7 +53,7 @@ export default function PlantsGrid() {
     if (plant.isWatering)
       return <Button btnStyle='danger btn-sm' display='Stop Watering' processing={plant.processing} processingText='Stopping...'
         onClick={() => dispatch(stopWateringAsync(plant.id)).unwrap()
-          .catch(error => setError(error))} />
+          .catch(e => setError(e))} />
 
     if (plant.status === 'Resting')
       return <RestingCoundownDisplay remaining={plant.remaining} />
@@ -61,7 +61,7 @@ export default function PlantsGrid() {
     if (plant.status === 'Normal' || plant.status === 'NeededWater')
       return <Button btnStyle='primary btn-sm' display='Start Watering' processing={plant.processing} processingText='Watering...'
         onClick={() => dispatch(startWateringAsync([plant.id])).unwrap()
-          .catch(error => setError(error))} />
+          .catch(e => setError(e))} />
 
   }
 
@@ -76,10 +76,10 @@ export default function PlantsGrid() {
       </div>
       :
       <div>
-        <Button btnStyle='primary' display='Watering selected plants'
+        <Button btnStyle='primary' display='Water selected plants'
           onClick={() => {
             dispatch(startWateringAsync(selectedPlants)).unwrap()
-            .catch(error => setError(error))
+            .catch(e => setError(e))
 
             setSelectedPlants([])
           }} />
@@ -102,10 +102,8 @@ export default function PlantsGrid() {
                 <tr key={plant.id} onClick={() => onSelectionChanged(plant)}>
                   <td>
                     <div className="form-check">
-                      <input className="form-check-input" type="checkbox"
-                        // defaultChecked={plant.selected}
-                        checked={selectedPlants.find(p => p === plant.id) !== undefined}
-                        onChange={() => onSelectionChanged(plant)} />
+                        <input className="form-check-input" type="checkbox"
+                            checked={selectedPlants.find(p => p === plant.id) !== undefined} />
                     </div>
                   </td>
                   <th scope="row">{index + 1}</th>

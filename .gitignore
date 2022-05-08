@@ -10,3 +10,4 @@
 **/plant.db-shm
 **/plant.db-wal
 **/.idea
+**/node_modules
